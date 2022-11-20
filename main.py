@@ -5,6 +5,8 @@ import logging
 import sys
 from dataclasses import dataclass
 from functools import lru_cache
+import rich
+from pydantic import BaseModel
 
 from config import settings, DATA_DIR
 
@@ -16,6 +18,10 @@ DATE_FORMAT = "%d-%b-%y %H:%M:%S"
 LOGGER_FORMAT = "%(levelname)s: %(asctime)s \t%(message)s"
 LOGGER_HANDLER = None
 
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: Union[bool, None] = None
 
 @dataclass
 class LoggerConfig:
@@ -74,6 +80,9 @@ def read_item(item_id: int, q: Union[str, None] = None):
     print(item_id)
     return {"item_id": item_id, "q": q}
 
+@app.put("/items/{item_id}")
+def update_item(item_id: int, item: Item):
+    return {"item_name": item.name, "item_id": item_id}
 
 def main():
     uvicorn.run(
