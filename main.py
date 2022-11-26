@@ -1,7 +1,7 @@
 import asyncio
 from typing import Union
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 import sys
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
@@ -25,7 +25,7 @@ class Item(BaseModel):
         }
 
 
-@app.get("/")
+@app.get("/", status_code=200)
 async def read_root():
     await async_test()
     return {"message": f"{datetime.now()}"}
@@ -76,8 +76,9 @@ def fake_save_user(user_in: UserIn):
     print("User saved! ..not really")
     return user_in_db
 
-
-@app.post("/user/", response_model=UserOut)
+# status_code=201
+# status_code=status.HTTP_201_CREATED
+@app.post("/user/", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 async def create_user(user_in: UserIn):
     user_saved = fake_save_user(user_in)
     return user_saved
