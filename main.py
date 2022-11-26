@@ -1,13 +1,18 @@
 import asyncio
 from typing import Union
 import uvicorn
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, Form
 import sys
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
 
 app = FastAPI()
+
+
+@app.post("/login/")
+async def login(username: str = Form(), password: str = Form()):
+    return {'username': username}
 
 
 class Item(BaseModel):
@@ -78,6 +83,8 @@ def fake_save_user(user_in: UserIn):
 
 # status_code=201
 # status_code=status.HTTP_201_CREATED
+
+
 @app.post("/user/", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 async def create_user(user_in: UserIn):
     user_saved = fake_save_user(user_in)
