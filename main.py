@@ -10,85 +10,14 @@ from datetime import datetime
 app = FastAPI()
 
 
-@app.post("/login/")
-async def login(username: str = Form(), password: str = Form()):
-    return {'username': username}
-
-
-class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: Union[bool, None] = None
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "name": "Foo",
-                "price": 35.4,
-                "is_offer": True,
-            }
-        }
-
-
 @app.get("/", status_code=200)
-async def read_root():
+async def root():
     await async_test()
     return {"message": f"{datetime.now()}"}
 
 
 async def async_test():
-    print("async_test begin")
-    # await asyncio.sleep(1)
-    print("async_test end")
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    print(item_id)
-    return {"item_id": item_id, "q": q}
-
-
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_id": item_id, **item.dict()}
-
-
-class UserBase(BaseModel):
-    username: str
-    email: EmailStr
-    full_name: Union[str, None] = None
-
-
-class UserIn(UserBase):
-    password: str
-
-
-class UserOut(UserBase):
-    pass
-
-
-class UserInDB(UserBase):
-    hashed_password: str
-
-
-def fake_password_hasher(raw_password: str):
-    return "supersecret" + raw_password
-
-
-def fake_save_user(user_in: UserIn):
-    hashed_password = fake_password_hasher(user_in.password)
-    user_in_db = UserInDB(**user_in.dict(), hashed_password=hashed_password)
-    print("User saved! ..not really")
-    return user_in_db
-
-# status_code=201
-# status_code=status.HTTP_201_CREATED
-
-
-@app.post("/user/", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def create_user(user_in: UserIn):
-    user_saved = fake_save_user(user_in)
-    return user_saved
+    asyncio.sleep(1)
 
 
 def main():
